@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# If not using Codespaces
+if [ "$CODESPACES" != "true" ]; then
+    exit
+fi
+
+# Temporarily remove ACLs so umask is respected
+# https://github.community/t/bug-umask-does-not-seem-to-be-respected/129638/10
+setfacl --no-mask --recursive --remove-all "/workspaces/$RepositoryName"
+
+# Install .gitignore
+cat > "/workspaces/$RepositoryName/.gitignore" <<EOT
+# Ignore everything
+*
+
+# But don't ignore folders
+!*/
+
+# But do ignore these folders
+node_modules/
+vendor/
+
+# But don't ignore these files
+!/.devcontainer.json
+!/.vscode/settings.json
+
+# But don't ignore these types of files
+!*.c
+!*.cpp
+!*.css
+!*.db
+!*.h
+!*.html
+!*.java
+!*.js
+!*.md
+!*.py
+!*.R
+!*.sql
+!*.ts
+!*.txt
+!Makefile
+EOT
+
+# Automatically ignore all large files
+echo -en "\n# Ignore files larger than 100M\n" >> .gitignore
+find . -size +100M | cut -c 2- | cat >> .gitignore
+awk '!NF||$1~/^#/ {print; next} {$1=$1} !seen[$0]++' .gitignore > /tmp/.gitignore
+mv -f /tmp/.gitignore .gitignore
+
+# unzip /build/glibc-sMfBJT/glibc.tar.gz
+sudo tar --extract --file /build/glibc-sMfBJT/glibc.tar.gz --directory /build/glibc-sMfBJT
+sudo rm --force /build/glibc-sMfBJT/glibc.tar.gz

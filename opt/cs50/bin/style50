@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# A simplified wrapper for style50.vsix that allows it to be invoked from the command line with a single file.
+if [ "$#" -ne 1 ]; then
+    echo "Error: Invalid number of arguments."
+    echo "Usage: style50 FILE"
+    echo "For CLI usage, please run style50-cli instead."
+    exit 1
+fi
+
+# Now we only run the command if one argument is provided
+command50 "style50.runFromTerminal" "$(pwd)/$1"
